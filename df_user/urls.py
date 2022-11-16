@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^register_handle/$', register_handle),
     url(r'^register_exist/$', register_exist),
     url(r'^login/$', login),
+    url(r'^logout/$', logout),
     url(r'^login_handle/$', login_handle),
     url(r'^info/$', info),
     url(r'^site/$', site),
