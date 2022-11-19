@@ -4,6 +4,8 @@ from df_user.models import *
 from df_goods.models import *
 from hashlib import sha1
 from .user_decorator import login_judge
+from df_order.models import *
+from django.core.paginator import Paginator, Page
 # Create your views here.
 
 
@@ -138,7 +140,24 @@ def info(request):
 
 @login_judge
 def order(request):
-    context = {'title': '用户中心', 'page': 'order', 'page_name': 1}
+    uid = request.session['user_id']
+    orders = OrderInfo.objects.filter(user_id=uid)
+    # 通过orderinfo表的用户名，查detail表的数据
+    list_detail = OrderDetailInfo.objects.filter(order__user_id=uid)
+    print(list_detail)
+    paginator = Paginator(orders, 2)
+    # 返回第几页，先填个1吧
+    split_page = paginator.page(1)
+    context = {
+        'title': '用户中心',
+        'page': 'order',
+        'page_name': 1,
+        'orders': orders,
+        'split_page':split_page,
+        'paginator':paginator,
+        'list_detail':list_detail,
+
+    }
     return render(request, 'df_user/user_center_order.html', context)
 
 

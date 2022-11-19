@@ -67,23 +67,26 @@
 		<li class="col01"><input type="checkbox" name="" checked="" id="check_all"></li>
 		<li class="col02">全选</li>
 		<li class="col03">合计(不含运费)：<span>¥</span><em id="total">42.60</em><br>共计<b class="total_count1">2</b>件商品</li>
-		<li class="col04"><a href="place_order.html">去结算</a></li>
+		<li class="col04"><a href="javascript:;">去结算</a></li>
 	</ul>
 
     {% endblock cart %}
 {% block js %}
     <script>
     ;(function (){
+        let checked_id =[]
         {#全选与取消全选#}
         $('#check_all').click(function (){
             state = $(this).prop('checked')
             $(':checkbox:not(#check_all)').prop('checked',state)
+            total()
         })
         {#选择#}
         $(':checkbox:not(#check_all)').click(function (){
 
             if($('this').prop('checked',false)){
                $('#check_all').prop('checked', false)
+                total()
             }
             if($(this).prop('checked')){
                 if($(':checked').length+1 == $(':checkbox').length){
@@ -91,26 +94,37 @@
                 }else{
                     $('#check_all').prop('checked', false)
                 }
+                total()
             }
         })
         {#计算小计和总和#}
         function total(){
-            total_sum = 0
-            total_count = 0
-            $('.col07').each(function (){
-                amount = $(this).prev().find('input').val()
-                price = $(this).prev().prev().text()
-                subtotal = parseFloat(amount)*parseFloat(price)
-                $(this).text(subtotal.toFixed(2))
-                total_sum += subtotal
-                total_count ++
+            let total_sum = 0
+            let total_count = 0
+
+            $('.cart_list_td').each(function (){
+                {#取消勾选还是要算一次#}
+                if($(this).find(':checkbox').prop('checked')){
+                    amount = $(this).find('.num_show').val()
+                    price = $(this).find('.col05').text()
+                    subtotal = parseFloat(amount)*parseFloat(price)
+                    $(this).find('.col07').text(subtotal.toFixed(2))
+                    total_sum += subtotal
+                    total_count ++
+
+                }else{
+
+                }
+               $('#total').text(total_sum.toFixed(2))
+               $('.total_count1').text(total_count)
             })
-            $('#total').text(total_sum.toFixed(2))
-            $('.total_count1').text(total_count)
         }
 
         $('.num_show').blur(function (){
            total()
+           cart_id = $(this).parents('.cart_list_td').attr('id')
+            num = $(this).val()
+            edit_data(cart_id,num)
         })
        total()
 
@@ -164,6 +178,22 @@
             }
         })}
 
+
+        {#去结算#}
+        $('.settlements').on('click','.col04', function (){
+            let subfix = ''
+             $('.cart_list_td').each(function (){
+                    {#取消勾选还是要算一次#}
+                    if($(this).find(':checkbox').prop('checked')){
+                        subfix += '&id='+$(this).attr('id')
+            }else {
+
+                    }
+
+                window.location.href = "/order/?"+subfix.slice(1) ;
+
+             })
+        })
     })()
     </script>
 {% endblock js %}
