@@ -79,7 +79,7 @@ def detail(request, id):
         goods_ids1 = goods_ids.split(',')
 
         # 如果已经记录就删除
-        if goods_ids1.count(0,goods_id) >= 1:
+        if goods_ids1.count(goods_id) >= 1:
             goods_ids1.remove(goods_id)
 
         # 将新浏览id插入cookie列表第一个

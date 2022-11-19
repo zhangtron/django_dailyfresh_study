@@ -25,7 +25,7 @@
 					<div class="operate">
 						<span class="prize">￥{{ g.gprice }}</span>
 						<span class="unit">{{ g.gprice }}/{{ g.gunit }}</span>
-						<a href="#" class="add_goods" title="加入购物车"></a>
+						<a href="javascript:;" class="add_goods" title="加入购物车"></a>
 					</div>
 				</li>
                 {% endfor %}
@@ -194,3 +194,26 @@
 		</div>
 
 {% endblock aside2 %}
+{% block js %}
+    <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
+    <script type="text/javascript">
+
+        ;(function (){
+            $.get('/cart/cart_num/', function (data){
+                $('#show_count').text(data.count)})
+
+                $('.goods_type_list').find('.add_goods').click(function (){
+
+                {#将商品数量传过去#}
+                 let x = $(this).parent().siblings('a').get(0).getAttribute('href')
+                    let reg = /\/(\d+)/
+                    gid = reg.exec(x)[1]
+                $.get('/cart/add'+ gid +'_1/', function (data){
+                    $('#show_count').text(data.count)
+                })
+            })
+
+        })()
+
+    </script>
+{% endblock js %}

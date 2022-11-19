@@ -43,49 +43,76 @@
 			</div>
 
 		</div>
+    <div class="add_jump"></div>
 {% endblock aside2 %}
 
 
 {% block js %}
 <script type="text/javascript" src="/static/js/jquery-1.12.4.min.js"></script>
 <script type="text/javascript">
-    $(function (){
-             var $add_x = $('#add_cart').offset().top;
-             var $add_y = $('#add_cart').offset().left;
 
-             var $to_x = $('#show_count').offset().top;
-             var $to_y = $('#show_count').offset().left;
+    ;(function (){
+         $.get('/cart/cart_num/', function (data){
+            $('#show_count').text(data.count)})
 
-             $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
-             $('#add_cart').click(function(){
-             $(".add_jump").stop().animate({
-             'left': $to_y+7,
-             'top': $to_x+7},
-             "fast", function() {
-             $(".add_jump").fadeOut('fast',function(){
-             $('#show_count').html(2);
-             });
-
-             });
-             })
-             });
-
-    let num = parseFloat($('.num_show').val())
-    let price = parseFloat($('.prize_bar .show_pirze em').text())
-    $('.add').click(function (){
-        num++
-        $('.num_show').val(num)
-         $('.total').html(`总价：<em>${(num*price).toFixed(2)}元</em>`)
-    })
-    $('.minus').click(function (){
-        num--
-        if(num <= 0){
-            num = 0
+        {#添加购物车#}
+        let num = parseFloat($('.num_show').val())
+        let price = parseFloat($('.prize_bar .show_pirze em').text())
+        {#购物车加#}
+        function add(){
+            num++
+            $('.num_show').val(num)
+            $('.total').html(`总价：<em>${(num*price).toFixed(2)}元</em>`)
         }
-         $('.num_show').val(num)
-        $('.total').html(`总价：<em>${(num*price).toFixed(2)}元</em>`)
-    })
+        function minus(){
+            num--
+            if(num <= 0){
+                num = 0
+            }
+            $('.num_show').val(num)
+            $('.total').html(`总价：<em>${(num*price).toFixed(2)}元</em>`)
+        }
 
+        $('.add').click(function (){
+           add()
+        })
+        $('.minus').click(function (){
+           minus()
+        })
+          {#购物车点击动画#}
+         let $add_x = $('#add_cart').offset().top;
+         let $add_y = $('#add_cart').offset().left;
+
+         let $to_x = $('#show_count').offset().top;
+         let $to_y = $('#show_count').offset().left;
+
+         $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+
+         $('#add_cart').click(function(){
+            {#add()#}
+              {#判断是否登录#}
+              if($('.login_btn').text().indexOf('登录')>=0){
+                  alert('请先登录再操作')
+                  location.href = '/user/login/'
+                  return
+              }
+
+             $(".add_jump").stop().animate({
+                 'left': $to_y+7,
+                 'top': $to_x+7},
+                 "fast", function() {
+                     $(".add_jump").fadeOut('fast',function(){
+                     $('#show_count').html(2);
+                     });
+             });
+             {#将商品数量传过去#}
+            $.get('/cart/add{{ g.id }}_'+ num + '/', function (data){
+                $('#show_count').text(data.count)
+            })
+         })
+
+
+    })()
 
 </script>
 {% endblock js %}
